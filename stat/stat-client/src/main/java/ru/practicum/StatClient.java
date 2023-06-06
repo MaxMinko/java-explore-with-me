@@ -13,16 +13,14 @@ import java.time.Duration;
 @Service
 public class StatClient {
 
-    private final String stateServiceUri;
     private final HttpClient httpClient;
 
 
-    public StatClient(String stateServiceUri) {
-        this.stateServiceUri = stateServiceUri;
+    public StatClient() {
         this.httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
     }
 
-    public void hit(String queryString) throws IOException, InterruptedException {
+    public void hit(String queryString,String stateServiceUri) throws IOException, InterruptedException {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(stateServiceUri + "/hit" + queryString))
                 .header(HttpHeaders.ACCEPT, "application/json")
@@ -30,7 +28,7 @@ public class StatClient {
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
     }
 
-    public void stats(String queryString) throws IOException, InterruptedException {
+    public void stats(String queryString,String stateServiceUri) throws IOException, InterruptedException {
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(URI.create(stateServiceUri + "/stats" + queryString))
                 .header(HttpHeaders.ACCEPT, "application/json")
