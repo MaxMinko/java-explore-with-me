@@ -54,7 +54,8 @@ public class StatServiceImpl implements StatService {
                 staticList = postStaticDao.findAllUniqStatic(startDate, endDate);
             }
         }
-        return staticList.stream().sorted(Comparator.comparingInt(PostStaticDtoForResponse::getHits).reversed()).collect(Collectors.toList());
+        return staticList.stream().sorted(Comparator.comparingInt(PostStaticDtoForResponse::getHits).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override
