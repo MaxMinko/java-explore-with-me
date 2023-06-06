@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class StatMapper {
-    public static PostStatic PostStaticDtoToPostStatic(PostStaticDto postStaticDto) {
+    public static PostStatic postStaticDtoToPostStatic(PostStaticDto postStaticDto) {
         PostStatic postStatic = new PostStatic();
         postStatic.setApp(postStaticDto.getApp());
         postStatic.setIp(postStaticDto.getIp());

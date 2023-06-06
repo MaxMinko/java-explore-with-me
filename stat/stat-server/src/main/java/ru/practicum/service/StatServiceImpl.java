@@ -59,7 +59,7 @@ public class StatServiceImpl implements StatService {
 
     @Override
     public PostStaticDto addHit(PostStaticDto postStaticDto) {
-        statRepository.save(StatMapper.PostStaticDtoToPostStatic(postStaticDto));
+        statRepository.save(StatMapper.postStaticDtoToPostStatic(postStaticDto));
         return postStaticDto;
     }
 }
