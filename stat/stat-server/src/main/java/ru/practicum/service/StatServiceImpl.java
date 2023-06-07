@@ -1,14 +1,13 @@
 package ru.practicum.service;
 
-
 import ru.practicum.dto.PostStaticDto;
 import ru.practicum.dto.PostStaticDtoForResponse;
 import lombok.AllArgsConstructor;
 import ru.practicum.mapper.StatMapper;
 import org.springframework.stereotype.Service;
-import ru.practicum.repository.PostStaticDao;
 import ru.practicum.repository.StatRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class StatServiceImpl implements StatService {
-    PostStaticDao postStaticDao;
     StatRepository statRepository;
 
     @Override
@@ -39,7 +37,15 @@ public class StatServiceImpl implements StatService {
                     staticList.add(postStaticDtoForResponse);
                 }
             } else {
-                staticList = postStaticDao.findAllStatic(startDate, endDate);
+                List<String> list = statRepository.findAllStatic(startDate, endDate);
+                for (String stat : list) {
+                    List<String> subStat = List.of(stat.split(","));
+                    PostStaticDtoForResponse postStaticDtoForResponse = new PostStaticDtoForResponse();
+                    postStaticDtoForResponse.setUri(subStat.get(2));
+                    postStaticDtoForResponse.setApp(subStat.get(1));
+                    postStaticDtoForResponse.setHits(Integer.parseInt(subStat.get(0)));
+                    staticList.add(postStaticDtoForResponse);
+                }
             }
         } else {
             if (!uris.isEmpty()) {
@@ -51,7 +57,15 @@ public class StatServiceImpl implements StatService {
                     staticList.add(postStaticDtoForResponse);
                 }
             } else {
-                staticList = postStaticDao.findAllUniqStatic(startDate, endDate);
+                List<String> list = statRepository.findAllUniqStatic(startDate, endDate);
+                for (String stat : list) {
+                    List<String> subStat = List.of(stat.split(","));
+                    PostStaticDtoForResponse postStaticDtoForResponse = new PostStaticDtoForResponse();
+                    postStaticDtoForResponse.setUri(subStat.get(2));
+                    postStaticDtoForResponse.setApp(subStat.get(1));
+                    postStaticDtoForResponse.setHits(Integer.parseInt(subStat.get(0)));
+                    staticList.add(postStaticDtoForResponse);
+                }
             }
         }
         return staticList.stream().sorted(Comparator.comparingInt(PostStaticDtoForResponse::getHits).reversed())
@@ -59,6 +73,7 @@ public class StatServiceImpl implements StatService {
     }
 
     @Override
+    @Transactional
     public PostStaticDto addHit(PostStaticDto postStaticDto) {
         statRepository.save(StatMapper.postStaticDtoToPostStatic(postStaticDto));
         return postStaticDto;
