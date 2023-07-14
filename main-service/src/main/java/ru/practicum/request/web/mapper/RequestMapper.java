@@ -6,6 +6,7 @@ import ru.practicum.request.web.dto.ParticipationRequestDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
 @UtilityClass
 public class RequestMapper {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

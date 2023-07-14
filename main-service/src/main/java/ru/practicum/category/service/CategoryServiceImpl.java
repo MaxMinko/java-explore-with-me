@@ -24,7 +24,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper
-                .NewCategoryDtoToCategory(newCategoryDto)));
+                .newCategoryDtoToCategory(newCategoryDto)));
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
             throw new CategoryValidationException("Нельзя изменить название категории на уже существующее");
         }
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper
-                .CategoryDtoToCategory(catId, categoryDto)));
+                .categoryDtoToCategory(catId, categoryDto)));
     }
 
     @Override

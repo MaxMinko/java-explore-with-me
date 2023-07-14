@@ -15,13 +15,13 @@ public class CategoryMapper {
         return categoryDto;
     }
 
-    public static Category NewCategoryDtoToCategory(NewCategoryDto newCategoryDto) {
+    public static Category newCategoryDtoToCategory(NewCategoryDto newCategoryDto) {
         Category category = new Category();
         category.setName(newCategoryDto.getName());
         return category;
     }
 
-    public static Category CategoryDtoToCategory(int catId, CategoryDto categoryDto) {
+    public static Category categoryDtoToCategory(int catId, CategoryDto categoryDto) {
         Category category = new Category();
         category.setName(categoryDto.getName());
         category.setId(catId);
