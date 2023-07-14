@@ -1,10 +1,8 @@
 package ru.practicum.event.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.impl.execchain.RequestAbortedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.StatClient;
