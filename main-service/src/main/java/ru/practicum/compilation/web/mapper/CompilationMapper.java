@@ -8,6 +8,7 @@ import ru.practicum.compilation.web.dto.UpdateCompilationRequest;
 import ru.practicum.event.web.dto.EventShortDto;
 
 import java.util.List;
+
 @UtilityClass
 public class CompilationMapper {
 

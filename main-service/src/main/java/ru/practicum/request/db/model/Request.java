@@ -22,6 +22,7 @@ public class Request {
     int event;
     int requester;
     String status;
+
     public Request() {
 
     }

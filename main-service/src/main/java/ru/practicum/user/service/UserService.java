@@ -6,10 +6,10 @@ import java.util.List;
 
 public interface UserService {
 
-  UserDto addUser(UserDto userDto);
+    UserDto addUser(UserDto userDto);
 
-  List<UserDto> getUser(List<Integer>usersId,int from,int size);
+    List<UserDto> getUser(List<Integer> usersId, int from, int size);
 
-  void deleteUser(int userId);
+    void deleteUser(int userId);
 
 }

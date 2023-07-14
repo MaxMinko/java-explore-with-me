@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
-  private final UserRepository userRepository;
+public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
 
     @Transactional
     @Override
@@ -23,19 +23,20 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDto> getUser(List<Integer> usersId,int from,int size) {
-      if(usersId.isEmpty()){
-        return userRepository.findAll(PageRequest.of(from,size)).stream().map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-      }else {
-        return userRepository.findAllByIds(usersId,PageRequest.of(from,size)).stream().map(UserMapper::toUserDto)
-                .collect(Collectors.toList());
-      }
+    public List<UserDto> getUser(List<Integer> usersId, int from, int size) {
+        if (usersId.isEmpty()) {
+            return userRepository.findAll(PageRequest.of(from, size)).stream().map(UserMapper::toUserDto)
+                    .collect(Collectors.toList());
+        } else {
+            return userRepository.findAllByIds(usersId, PageRequest.of(from, size)).stream().map(UserMapper::toUserDto)
+                    .collect(Collectors.toList());
+        }
     }
+
     @Transactional
     @Override
     public void deleteUser(int userId) {
-      userRepository.deleteById(userId);
+        userRepository.deleteById(userId);
     }
 
 }

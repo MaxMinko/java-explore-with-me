@@ -36,6 +36,7 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requests = requestRepository.findByUserId(userId);
         return requests.stream().map(RequestMapper::requestToParticipationRequestDto).collect(Collectors.toList());
     }
+
     @Transactional
     @Override
     public ParticipationRequestDto addRequest(int userId, int eventId) {
@@ -47,12 +48,13 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventService.getEventById(eventId);
         if (eventId != 0) {
             if (event.getUser().getId() == userId) {
-          throw new EventValidationException("Инициатор события не может добавлять запрос на участие в своем событии.");
+                throw new EventValidationException("Инициатор события не может " +
+                        "добавлять запрос на участие в своем событии.");
             }
             if (!event.getState().equals(EventStatus.PUBLISHED.toString())) {
                 throw new EventValidationException("Событие должно быть опубликовано.");
             }
-            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() - findRequestForOneEvent(eventId) < 1){
+            if (event.getParticipantLimit() != 0 && event.getParticipantLimit() - findRequestForOneEvent(eventId) < 1) {
                 throw new EventValidationException("Достигнут лимит запросов на участие.");
             }
 
@@ -70,6 +72,7 @@ public class RequestServiceImpl implements RequestService {
         Request requestForResponse = requestRepository.save(requestForAdd);
         return RequestMapper.requestToParticipationRequestDto(requestForResponse);
     }
+
     @Transactional
     @Override
     public ParticipationRequestDto cancelRequest(int userId, int requestId) {
@@ -87,9 +90,10 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> findRequest(List<Integer> requestIds) {
-        return requestRepository.findRequests(requestIds)
-                .stream().map(RequestMapper::requestToParticipationRequestDto).collect(Collectors.toList());
+        return requestRepository.findRequests(requestIds).stream().map(RequestMapper::requestToParticipationRequestDto)
+                .collect(Collectors.toList());
     }
+
     @Transactional
     @Override
     public List<ParticipationRequestDto> saveRequests(List<Request> requests) {

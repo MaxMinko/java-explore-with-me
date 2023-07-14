@@ -11,8 +11,7 @@ import java.util.List;
 public interface CompilationRepository extends JpaRepository<Compilation, Integer> {
 
     @Modifying(clearAutomatically = true)
-    @Query(value = "insert into eventIdsForCompilation (compilation_id,event_id) values (?1,?2)"
-            , nativeQuery = true)
+    @Query(value = "insert into eventIdsForCompilation (compilation_id,event_id) values (?1,?2)", nativeQuery = true)
     void addEventsId(int compilationId, int eventId);
 
     @Query(value = "select event_id from eventIdsForCompilation where compilation_id=?", nativeQuery = true)
