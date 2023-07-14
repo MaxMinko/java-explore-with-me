@@ -1,7 +1,6 @@
 package ru.practicum.controller;
 
-import jakarta.ws.rs.Consumes;
-import org.springframework.http.MediaType;
+
 import ru.practicum.dto.PostStaticDto;
 import ru.practicum.dto.PostStaticDtoForResponse;
 import lombok.RequiredArgsConstructor;
