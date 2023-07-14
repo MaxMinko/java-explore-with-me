@@ -155,10 +155,14 @@ public class EventServiceImpl implements EventService {
             if (LocalDateTime.parse(rangeStart, formatter).isAfter(LocalDateTime.parse(rangeEnd, formatter))) {
                 throw new TimeValidationException("Время начала события не может быть позже конца события.");
             }
-
-
         }
-
+        try {
+            statClient.hit("/events");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         if (text == null && paid == null && rangeStart == null && rangeEnd == null) {
             return eventRepository.findByCategoryId(categories, PageRequest.of(from, size)).stream()
@@ -181,13 +185,6 @@ public class EventServiceImpl implements EventService {
                     .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter),
                     PageRequest.of(from, size)).stream().map(EventMapper::eventToEventShortDto)
                     .collect(Collectors.toList());
-        }
-        try {
-            statClient.hit("/events");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
         return new ArrayList<>();
     }
