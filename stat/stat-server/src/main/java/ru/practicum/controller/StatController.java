@@ -1,5 +1,7 @@
 package ru.practicum.controller;
 
+import jakarta.ws.rs.Consumes;
+import org.springframework.http.MediaType;
 import ru.practicum.dto.PostStaticDto;
 import ru.practicum.dto.PostStaticDtoForResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class StatController {
     }
 
     @GetMapping("/stats")
-    public List<PostStaticDtoForResponse> getStats(@RequestParam(value = "start") String start,
+    public List<PostStaticDtoForResponse> getStats (@RequestParam(value = "start") String start,
                                                  @RequestParam(value = "end") String end,
                                                  @RequestParam(value = "unique", defaultValue = "false") boolean unique,
                                                  @RequestParam(value = "uris", defaultValue = "") List<String> uris) {
