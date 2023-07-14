@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.net.http.HttpRequest;
+
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
