@@ -72,8 +72,7 @@ public class StatServiceImpl implements StatService {
                 }
             }
         }
-        return staticList.stream().sorted(Comparator.comparingInt(PostStaticDtoForResponse::getHits).reversed())
-                .collect(Collectors.toList());
+        return staticList.stream().sorted(Comparator.comparingInt(PostStaticDtoForResponse::getHits).reversed()).collect(Collectors.toList());
     }
 
     @Override
