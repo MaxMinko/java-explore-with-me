@@ -266,6 +266,13 @@ public class EventServiceImpl implements EventService {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+            try {
+                statClient.hit("/events");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             eventFullDto.setViews(views);
             eventFullDtos.add(eventFullDto);
         }

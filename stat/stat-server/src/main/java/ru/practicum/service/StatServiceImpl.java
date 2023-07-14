@@ -3,11 +3,13 @@ package ru.practicum.service;
 import ru.practicum.dto.PostStaticDto;
 import ru.practicum.dto.PostStaticDtoForResponse;
 import lombok.AllArgsConstructor;
+import ru.practicum.exception.TimeValidationException;
 import ru.practicum.mapper.StatMapper;
 import org.springframework.stereotype.Service;
 import ru.practicum.repository.StatRepository;
 
 import javax.transaction.Transactional;
+import javax.xml.bind.ValidationException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -27,6 +29,9 @@ public class StatServiceImpl implements StatService {
         LocalDateTime startDate = LocalDateTime.parse(start, formatter);
         LocalDateTime endDate = LocalDateTime.parse(end, formatter);
         List<PostStaticDtoForResponse> staticList = new ArrayList<>();
+        if(startDate.isAfter(endDate)){
+            throw new TimeValidationException("Дата начал не может быть позже даты конца события.");
+        }
         if (unique == false) {
             if (!uris.isEmpty()) {
                 for (String uri : uris) {
