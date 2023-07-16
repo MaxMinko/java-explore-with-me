@@ -16,7 +16,7 @@ public class EventControllerPublic {
     private final EventService eventService;
 
     @GetMapping()
-    List<EventShortDto> getEventsWithFilter(@RequestParam(value = "text", required = false) String text,
+    public List<EventShortDto> getEventsWithFilter(@RequestParam(value = "text", required = false) String text,
                                   @RequestParam(value = "categories", required = false) List<Integer> categories,
                                   @RequestParam(value = "paid", required = false) Boolean paid,
                                   @RequestParam(value = "rangeStart", required = false) String rangeStart,
@@ -31,7 +31,7 @@ public class EventControllerPublic {
     }
 
     @GetMapping("/{id}")
-    EventFullDto getEventWithFilter(@PathVariable(value = "id") int id) {
+    public EventFullDto getEventWithFilter(@PathVariable(value = "id") int id) {
         return eventService.getEvent(id);
     }
 }

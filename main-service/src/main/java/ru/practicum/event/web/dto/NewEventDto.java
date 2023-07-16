@@ -16,19 +16,16 @@ import javax.validation.constraints.NotNull;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class NewEventDto {
-    @NotNull
     @NotEmpty
     @NotBlank
     @Length(max = 2000, min = 20)
     String annotation;
     @NotNull
     Integer category;
-    @NotNull
     @NotEmpty
     @NotBlank
     @Length(min = 20, max = 7000)
     String description;
-    @NotNull
     @NotEmpty
     @NotBlank
     String eventDate;
@@ -37,7 +34,6 @@ public class NewEventDto {
     Boolean paid = false;
     Integer participantLimit = 0;
     Boolean requestModeration = true;
-    @NotNull
     @NotEmpty
     @NotBlank
     @Length(min = 3, max = 120)

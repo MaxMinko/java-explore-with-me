@@ -14,13 +14,11 @@ import javax.validation.constraints.*;
 public class UserDto {
 
     int id;
-    @NotNull
     @NotEmpty
     @NotBlank
     @Length(min = 2)
     @Length(max = 250)
     String name;
-    @NotNull
     @NotEmpty
     @Email
     @NotBlank

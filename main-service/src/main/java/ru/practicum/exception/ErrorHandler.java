@@ -14,70 +14,71 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCategoryNotFoundException(final CategoryNotFoundException e) {
-        log.info("Категория не найдена.");
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleRequestNotFoundException(final RequestNotFoundException e) {
-        log.info("Заявка не найдена.");
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleRepeatRequestException(final RepeatRequestException e) {
-        log.info("Повторная заявка.");
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleEventNotFoundException(final EventNotFoundException e) {
-        log.info("Событие не найдена.");
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEventValidationException(final EventValidationException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleTimeValidationException(final TimeValidationException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 400 BAD_REQUEST {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handlePsqlException(final PSQLException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleCompilationNotFoundException(final CompilationNotFoundException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleRequestValidationException(final RequestValidationException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleCategoryValidationException(final CategoryValidationException e) {
-        log.info(e.getMessage());
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
+
 }

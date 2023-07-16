@@ -28,6 +28,13 @@ public class CompilationMapper {
         compilationDto.setTitle(compilation.getTitle());
         return compilationDto;
     }
+    public static CompilationDto compilationToCompilationDto1(Compilation compilation) {
+        CompilationDto compilationDto = new CompilationDto();
+        compilationDto.setId(compilation.getId());
+        compilationDto.setPinned(compilation.getPinned());
+        compilationDto.setTitle(compilation.getTitle());
+        return compilationDto;
+    }
 
     public static Compilation updateCompilationRequestToCompilation(UpdateCompilationRequest updateCompilationRequest,
                                                                     int id) {

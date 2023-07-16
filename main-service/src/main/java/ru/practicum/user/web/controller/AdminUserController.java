@@ -17,19 +17,19 @@ public class AdminUserController {
     private final UserService userService;
 
     @PostMapping()
-    ResponseEntity<UserDto> addUser(@Validated @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> addUser(@Validated @RequestBody UserDto userDto) {
         return new ResponseEntity<>(userService.addUser(userDto), HttpStatus.CREATED);
     }
 
     @GetMapping()
-    List<UserDto> getUser(@RequestParam(value = "ids", defaultValue = "") List<Integer> ids,
+    public List<UserDto> getUser(@RequestParam(value = "ids", defaultValue = "") List<Integer> ids,
                           @RequestParam(value = "from", defaultValue = "0") int from,
                           @RequestParam(value = "size", defaultValue = "10") int size) {
         return userService.getUser(ids, from, size);
     }
 
     @DeleteMapping("/{userId}")
-    ResponseEntity<UserDto> deleteUser(@PathVariable("userId") int userId) {
+    public ResponseEntity<UserDto> deleteUser(@PathVariable("userId") int userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

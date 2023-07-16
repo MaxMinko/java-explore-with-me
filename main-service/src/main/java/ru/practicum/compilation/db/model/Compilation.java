@@ -1,18 +1,19 @@
 package ru.practicum.compilation.db.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 
 import javax.persistence.*;
 
 
-@Data
+
 @Entity
 @Table(name = "compilations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@Getter
+@Setter
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +21,6 @@ public class Compilation {
     int id;
     Boolean pinned;
     String title;
-
     public Compilation() {
 
     }

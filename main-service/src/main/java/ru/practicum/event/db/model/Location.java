@@ -1,14 +1,14 @@
 package ru.practicum.event.db.model;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 
-@Data
+
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
+@Getter
+@Setter
 public class Location {
 
     Float lat;

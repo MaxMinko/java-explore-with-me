@@ -3,11 +3,12 @@ package ru.practicum.compilation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.compilation.db.model.Compilation;
+import ru.practicum.compilation.db.model.EventsAndCompilationsIds;
 import ru.practicum.compilation.db.repository.CompilationRepository;
+import ru.practicum.compilation.db.repository.EventsAndCompilationsIdsRepository;
 import ru.practicum.compilation.web.dto.CompilationDto;
 import ru.practicum.compilation.web.dto.NewCompilationDto;
 import ru.practicum.compilation.web.dto.UpdateCompilationRequest;
@@ -18,8 +19,8 @@ import ru.practicum.exception.CompilationNotFoundException;
 
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -27,11 +28,16 @@ public class CompilationServiceImpl implements CompilationService {
 
     private final CompilationRepository compilationRepository;
     private final EventService eventService;
+    private final EventsAndCompilationsIdsRepository eventsAndCompilationsIdsRepository;
+
 
     @Autowired
-    CompilationServiceImpl(CompilationRepository compilationRepository, @Lazy EventService eventService) {
+    public CompilationServiceImpl(CompilationRepository compilationRepository,
+                                  EventsAndCompilationsIdsRepository eventsAndCompilationsIdsRepository,
+                                  @Lazy EventService eventService) {
         this.compilationRepository = compilationRepository;
         this.eventService = eventService;
+        this.eventsAndCompilationsIdsRepository = eventsAndCompilationsIdsRepository;
     }
 
     @Override
@@ -39,12 +45,18 @@ public class CompilationServiceImpl implements CompilationService {
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = compilationRepository.save(CompilationMapper
                 .newCompilationDtoToCompilation(newCompilationDto));
-        List<Integer> eventsId = new ArrayList<>();
-        for (int eventId : newCompilationDto.getEvents()) {
-            compilationRepository.addEventsId(compilation.getId(), eventId);
-            eventsId.add(eventId);
+        List<Integer> eventsIds = newCompilationDto.getEvents();
+        if (eventsIds.size() != 0) {
+            List<EventsAndCompilationsIds> eventsAndCompilationsIdsList = new ArrayList<>();
+            for (Integer id : eventsIds) {
+                EventsAndCompilationsIds eventsAndCompilationsIds = new EventsAndCompilationsIds();
+                eventsAndCompilationsIds.setCompilationId(compilation.getId());
+                eventsAndCompilationsIds.setEventId(id);
+                eventsAndCompilationsIdsList.add(eventsAndCompilationsIds);
+            }
+            eventsAndCompilationsIdsRepository.saveAll(eventsAndCompilationsIdsList);
         }
-        List<EventShortDto> events = eventService.getAllEvents(eventsId);
+        List<EventShortDto> events = eventService.getAllEvents(eventsIds);
         return CompilationMapper.compilationToCompilationDto(compilation, events);
     }
 
@@ -56,7 +68,7 @@ public class CompilationServiceImpl implements CompilationService {
         List<Integer> eventsId = compilationRepository.findCompilationEvents(compilation.getId());
         List<EventShortDto> events = eventService.getAllEvents(eventsId);
         compilationRepository.deleteById(compId);
-        compilationRepository.delete(compId);
+        eventsAndCompilationsIdsRepository.deleteByCompilationId(compId);
         return CompilationMapper.compilationToCompilationDto(compilation, events);
     }
 
@@ -74,8 +86,16 @@ public class CompilationServiceImpl implements CompilationService {
             compilationForUpdate.setPinned(compilation.getPinned());
         }
         List<EventShortDto> events = eventService.getAllEvents(updateCompilationRequest.getEvents());
-        for (Integer eventId : updateCompilationRequest.getEvents()) {
-            compilationRepository.addEventsId(compId, eventId);
+        List<Integer> eventsIds = updateCompilationRequest.getEvents();
+        if (eventsIds.size() != 0) {
+            List<EventsAndCompilationsIds> eventsAndCompilationsIdsList = new ArrayList<>();
+            for (Integer id : eventsIds) {
+                EventsAndCompilationsIds eventsAndCompilationsIds = new EventsAndCompilationsIds();
+                eventsAndCompilationsIds.setCompilationId(compilation.getId());
+                eventsAndCompilationsIds.setEventId(id);
+                eventsAndCompilationsIdsList.add(eventsAndCompilationsIds);
+            }
+            eventsAndCompilationsIdsRepository.saveAll(eventsAndCompilationsIdsList);
         }
         return CompilationMapper.compilationToCompilationDto(compilationRepository.save(compilationForUpdate), events);
     }
@@ -88,13 +108,35 @@ public class CompilationServiceImpl implements CompilationService {
         } else {
             compilations = compilationRepository.findAllByPinned(pinned, PageRequest.of(from, size));
         }
-        List<CompilationDto> compilationDtos = new ArrayList<>();
-        for (Compilation compilation : compilations) {
-            List<Integer> eventsId = compilationRepository.findCompilationEvents(compilation.getId());
-            List<EventShortDto> events = eventService.getAllEvents(eventsId);
-            compilationDtos.add(CompilationMapper.compilationToCompilationDto(compilation, events));
+        List<Integer> ids = compilations.stream().map(c -> c.getId()).collect(Collectors.toList());
+        List<EventsAndCompilationsIds> eventsAndCompilationsIdsList = eventsAndCompilationsIdsRepository
+                .findByCompilationIdIn(ids);
+        List<Integer> idsCompilationWithEvents = eventsAndCompilationsIdsList.stream()
+                .map(x -> x.getCompilationId()).collect(Collectors.toList());
+        List<Integer> eventsIds = eventsAndCompilationsIdsList.stream().map(x -> x.getEventId())
+                .collect(Collectors.toList());
+        List<EventShortDto> events = eventService.getAllEvents(eventsIds);
+        List<CompilationDto> compilationDtosList = compilations.stream()
+                .map(CompilationMapper::compilationToCompilationDto1).collect(Collectors.toList());
+        for (CompilationDto compilation : compilationDtosList) {
+            if (idsCompilationWithEvents.contains(compilation.getId())) {
+                List<EventsAndCompilationsIds> eventsAndCompilationsIds =eventsAndCompilationsIdsList.stream()
+                        .filter(x -> x.getCompilationId() == compilation.getId())
+                        .collect(Collectors.toList());
+                List<Integer> eventsId = eventsAndCompilationsIds .stream().map(x -> x.getEventId())
+                        .collect(Collectors.toList());
+                List<EventShortDto> eventsForCompilation = new ArrayList<>();
+                for (Integer id : eventsId) {
+                    List<EventShortDto> eventForCompilation = events.stream().filter(x -> x.getId() == id)
+                            .collect(Collectors.toList());
+                    eventsForCompilation.add(eventForCompilation.get(0));
+                }
+                compilation.setEvents(eventsForCompilation);
+            } else {
+                compilation.setEvents(new ArrayList<>());
+            }
         }
-        return compilationDtos;
+        return compilationDtosList;
     }
 
     @Override

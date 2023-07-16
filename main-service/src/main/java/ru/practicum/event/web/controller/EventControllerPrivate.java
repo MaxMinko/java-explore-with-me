@@ -19,13 +19,13 @@ public class EventControllerPrivate {
 
 
     @PostMapping()
-    ResponseEntity<EventFullDto> addEvent(@Validated @RequestBody NewEventDto newEventDto,
+    public ResponseEntity<EventFullDto> addEvent(@Validated @RequestBody NewEventDto newEventDto,
                                           @PathVariable("userId") int userId) {
         return new ResponseEntity<>(eventService.addEvent(newEventDto, userId), HttpStatus.CREATED);
     }
 
     @GetMapping()
-    List<EventShortDto> getUserEvents(@PathVariable("userId") int userId,
+    public List<EventShortDto> getUserEvents(@PathVariable("userId") int userId,
                                       @RequestParam(value = "from", defaultValue = "0") int from,
                                       @RequestParam(value = "size", defaultValue = "10") int size) {
 
@@ -33,24 +33,24 @@ public class EventControllerPrivate {
     }
 
     @GetMapping("/{eventId}")
-    EventFullDto getEvent(@PathVariable("userId") int userId, @PathVariable("eventId") int eventId) {
+    public EventFullDto getEvent(@PathVariable("userId") int userId, @PathVariable("eventId") int eventId) {
         return eventService.getEvent(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
-    EventFullDto updateEvent(@PathVariable("userId") int userId, @PathVariable("eventId") int eventId,
+    public EventFullDto updateEvent(@PathVariable("userId") int userId, @PathVariable("eventId") int eventId,
                              @Validated @RequestBody UpdateEventUserRequest updateEventUserRequest) {
         return eventService.updateEvent(userId, eventId, updateEventUserRequest);
     }
 
     @GetMapping("/{eventId}/requests")
-    List<ParticipationRequestDto> getRequests(@PathVariable("userId") int userId,
+    public List<ParticipationRequestDto> getRequests(@PathVariable("userId") int userId,
                                               @PathVariable("eventId") int eventId) {
         return eventService.getRequests(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")
-    EventRequestStatusUpdateResult updateRequest(@RequestBody EventRequestStatusUpdateRequest
+    public EventRequestStatusUpdateResult updateRequest(@RequestBody EventRequestStatusUpdateRequest
                                                          eventRequestStatusUpdateRequest,
                                                  @PathVariable("userId") int userId,
                                                  @PathVariable("eventId") int eventId) {

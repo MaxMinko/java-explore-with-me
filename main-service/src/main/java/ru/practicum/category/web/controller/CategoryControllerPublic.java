@@ -14,13 +14,13 @@ public class CategoryControllerPublic {
     private final CategoryService categoryService;
 
     @GetMapping()
-    List<CategoryDto> getAllCategory(@RequestParam(value = "from", defaultValue = "0") int from,
+    public List<CategoryDto> getAllCategory(@RequestParam(value = "from", defaultValue = "0") int from,
                                      @RequestParam(value = "size", defaultValue = "10") int size) {
         return categoryService.getAllCategory(from, size);
     }
 
     @GetMapping("/{catId}")
-    CategoryDto getCategory(@PathVariable("catId") int catId) {
+    public CategoryDto getCategory(@PathVariable("catId") int catId) {
         return categoryService.getCategory(catId);
     }
 

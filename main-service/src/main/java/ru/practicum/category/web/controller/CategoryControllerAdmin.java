@@ -16,18 +16,18 @@ public class CategoryControllerAdmin {
     private final CategoryService categoryService;
 
     @PostMapping()
-    ResponseEntity<CategoryDto> addCategory(@Validated @RequestBody NewCategoryDto newCategoryDto) {
+    public ResponseEntity<CategoryDto> addCategory(@Validated @RequestBody NewCategoryDto newCategoryDto) {
         return new ResponseEntity<>(categoryService.addCategory(newCategoryDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{catId}")
-    ResponseEntity<CategoryDto> deleteCategory(@PathVariable("catId") int catId) {
+    public ResponseEntity<CategoryDto> deleteCategory(@PathVariable("catId") int catId) {
         categoryService.deleteCategory(catId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/{catId}")
-    CategoryDto updateCategory(@Validated @RequestBody CategoryDto categoryDto, @PathVariable("catId") int catId) {
+    public CategoryDto updateCategory(@Validated @RequestBody CategoryDto categoryDto, @PathVariable("catId") int catId) {
         return categoryService.updateCategory(catId, categoryDto);
     }
 }

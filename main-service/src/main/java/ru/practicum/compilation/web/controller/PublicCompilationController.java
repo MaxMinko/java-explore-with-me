@@ -15,14 +15,14 @@ public class PublicCompilationController {
     private final CompilationService compilationService;
 
     @GetMapping()
-    List<CompilationDto> getCompilations(@RequestParam(value = "pinned", required = false) Boolean pinned,
+    public List<CompilationDto> getCompilations(@RequestParam(value = "pinned", required = false) Boolean pinned,
                                          @RequestParam(value = "from", defaultValue = "0") int from,
                                          @RequestParam(value = "size", defaultValue = "10") int size) {
         return compilationService.getCompilations(pinned, from, size);
     }
 
     @GetMapping("/{compId}")
-    CompilationDto getCompilation(@PathVariable("compId") int compId) {
+    public CompilationDto getCompilation(@PathVariable("compId") int compId) {
         return compilationService.getCompilation(compId);
 
     }

@@ -20,7 +20,6 @@ public class NewCompilationDto {
     Boolean pinned = false;
     @NotEmpty
     @NotBlank
-    @NotNull
     @Length(max = 50)
     String title;
 }
