@@ -22,6 +22,7 @@ public class EventsAndCompilationsIds {
     Integer id;
     Integer compilationId;
     Integer eventId;
+
     public EventsAndCompilationsIds() {
 
     }

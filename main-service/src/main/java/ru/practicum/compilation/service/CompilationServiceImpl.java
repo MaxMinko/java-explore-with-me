@@ -117,13 +117,13 @@ public class CompilationServiceImpl implements CompilationService {
                 .collect(Collectors.toList());
         List<EventShortDto> events = eventService.getAllEvents(eventsIds);
         List<CompilationDto> compilationDtosList = compilations.stream()
-                .map(CompilationMapper::compilationToCompilationDto1).collect(Collectors.toList());
+                .map(CompilationMapper::compilationToCompilationDto).collect(Collectors.toList());
         for (CompilationDto compilation : compilationDtosList) {
             if (idsCompilationWithEvents.contains(compilation.getId())) {
-                List<EventsAndCompilationsIds> eventsAndCompilationsIds =eventsAndCompilationsIdsList.stream()
+                List<EventsAndCompilationsIds> eventsAndCompilationsIds = eventsAndCompilationsIdsList.stream()
                         .filter(x -> x.getCompilationId() == compilation.getId())
                         .collect(Collectors.toList());
-                List<Integer> eventsId = eventsAndCompilationsIds .stream().map(x -> x.getEventId())
+                List<Integer> eventsId = eventsAndCompilationsIds.stream().map(x -> x.getEventId())
                         .collect(Collectors.toList());
                 List<EventShortDto> eventsForCompilation = new ArrayList<>();
                 for (Integer id : eventsId) {

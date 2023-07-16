@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 
 
-
 @Entity
 @Table(name = "compilations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,6 +20,7 @@ public class Compilation {
     int id;
     Boolean pinned;
     String title;
+
     public Compilation() {
 
     }
