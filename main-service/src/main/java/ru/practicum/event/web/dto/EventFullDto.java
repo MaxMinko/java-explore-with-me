@@ -30,5 +30,5 @@ public class EventFullDto {
     String state;
     String title;
     int views;
-    List<CommentDto>comments;
+    List<CommentDto> comments;
 }

@@ -40,9 +40,10 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(int userId) {
         userRepository.deleteById(userId);
     }
+
     @Override
-    public User getUser(int userId){
-        return userRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("Пользователь не найден."));
+    public User getUser(int userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("Пользователь не найден."));
     }
 
 }

@@ -20,25 +20,25 @@ public class EventControllerAdmin {
 
     @GetMapping()
     public List<EventFullDto> getEvents(@RequestParam(value = "users", required = false) List<Integer> users,
-                                 @RequestParam(value = "states", required = false) List<String> states,
-                                 @RequestParam(value = "categories", required = false) List<Integer> categories,
-                                 @RequestParam(value = "rangeStart", required = false) String rangeStart,
-                                 @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
-                                 @RequestParam(value = "from", defaultValue = "0") int from,
-                                 @RequestParam(value = "size", defaultValue = "10") int size) {
+                                        @RequestParam(value = "states", required = false) List<String> states,
+                                        @RequestParam(value = "categories", required = false) List<Integer> categories,
+                                        @RequestParam(value = "rangeStart", required = false) String rangeStart,
+                                        @RequestParam(value = "rangeEnd", required = false) String rangeEnd,
+                                        @RequestParam(value = "from", defaultValue = "0") int from,
+                                        @RequestParam(value = "size", defaultValue = "10") int size) {
         return eventService.getEvents(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEvent(@PathVariable(value = "eventId", required = false) Integer eventId,
-                             @Validated @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
+                                    @Validated @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         return eventService.updateEvent(eventId, updateEventAdminRequest);
     }
 
     @DeleteMapping("/{eventId}/comment/{commentId}")
     public ResponseEntity<CommentDto> deleteComment(@PathVariable(value = "eventId") int eventId,
-                                                    @PathVariable(value = "commentId") int commentId){
-        eventService.deleteComment(eventId,commentId);
+                                                    @PathVariable(value = "commentId") int commentId) {
+        eventService.deleteComment(eventId, commentId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

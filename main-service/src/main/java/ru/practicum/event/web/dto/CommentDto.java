@@ -15,14 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentDto {
     int id;
-    @NotEmpty()
+    @NotEmpty
     @NotBlank
     @Length(max = 1000)
     String text;
     String authorName;
     int eventId;
     LocalDateTime created;
-    public CommentDto(){
+
+    public CommentDto() {
 
     }
 }
