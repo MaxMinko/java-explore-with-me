@@ -56,6 +56,17 @@ public class EventControllerPrivate {
                                                  @PathVariable("eventId") int eventId) {
         return eventService.updateRequest(eventRequestStatusUpdateRequest, userId, eventId);
     }
-
-
+    @PostMapping("/{eventId}/comment")
+    public ResponseEntity<CommentDto> addComment(@Validated @RequestBody CommentDto commentDto,
+                           @PathVariable("userId")int userId,
+                           @PathVariable("eventId") int eventId){
+      return new ResponseEntity<>(eventService.addComment(commentDto,userId,eventId),HttpStatus.CREATED);
+    }
+    @PatchMapping("/{eventId}/comment/{commentId}")
+    public CommentDto updateComment(@Validated @RequestBody CommentDto commentDto,
+                                    @PathVariable("userId")int userId,
+                                    @PathVariable("eventId") int eventId,
+                                    @PathVariable("commentId")int commentId){
+        return eventService.updateComment(commentDto,userId,eventId,commentId);
+    }
 }

@@ -80,5 +80,22 @@ public class ErrorHandler {
         log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
         return new ErrorResponse(e.getMessage());
     }
-
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
+        return new ErrorResponse(e.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleCommentNotFoundException(final CommentNotFoundException e) {
+        log.debug("Получен статус 404 NOT_FOUND {}",e.getMessage(),e);
+        return new ErrorResponse(e.getMessage());
+    }
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleCommentException(final CommentException e) {
+        log.debug("Получен статус 409 CONFLICT {}",e.getMessage(),e);
+        return new ErrorResponse(e.getMessage());
+    }
 }

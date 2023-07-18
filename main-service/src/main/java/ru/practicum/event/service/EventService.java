@@ -38,5 +38,10 @@ public interface EventService {
                                                  int userId, int eventId);
 
     List<EventShortDto> getAllEvents(List<Integer> eventsId);
+    CommentDto addComment(CommentDto commentDto, int userId, int itemId);
+
+    void deleteComment(int eventId, int commentId);
+
+    CommentDto updateComment(CommentDto commentDto, int userId, int eventId,int commentId);
 }
 

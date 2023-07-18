@@ -1,9 +1,12 @@
 package ru.practicum.event.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.service.EventService;
+import ru.practicum.event.web.dto.CommentDto;
 import ru.practicum.event.web.dto.EventFullDto;
 import ru.practicum.event.web.dto.UpdateEventAdminRequest;
 
@@ -30,8 +33,12 @@ public class EventControllerAdmin {
     public EventFullDto updateEvent(@PathVariable(value = "eventId", required = false) Integer eventId,
                              @Validated @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         return eventService.updateEvent(eventId, updateEventAdminRequest);
-
     }
 
-
+    @DeleteMapping("/{eventId}/comment/{commentId}")
+    public ResponseEntity<CommentDto> deleteComment(@PathVariable(value = "eventId") int eventId,
+                                                    @PathVariable(value = "commentId") int commentId){
+        eventService.deleteComment(eventId,commentId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
