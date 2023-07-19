@@ -8,6 +8,8 @@ import ru.practicum.category.web.dto.CategoryDto;
 import ru.practicum.event.db.model.Location;
 import ru.practicum.user.web.dto.UserShortDto;
 
+import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -28,4 +30,5 @@ public class EventFullDto {
     String state;
     String title;
     int views;
+    List<CommentDto> comments;
 }

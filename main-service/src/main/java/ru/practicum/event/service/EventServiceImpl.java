@@ -9,20 +9,21 @@ import ru.practicum.StatClient;
 import ru.practicum.category.db.model.Category;
 import ru.practicum.category.service.CategoryService;
 import ru.practicum.category.web.dto.CategoryDto;
+import ru.practicum.event.db.model.Comment;
 import ru.practicum.event.db.model.Event;
 import ru.practicum.event.db.model.EventStatus;
+import ru.practicum.event.db.repository.CommentRepository;
 import ru.practicum.event.db.repository.EventRepository;
 import ru.practicum.event.web.dto.*;
+import ru.practicum.event.web.mapper.CommentMapper;
 import ru.practicum.event.web.mapper.EventMapper;
-import ru.practicum.exception.EventNotFoundException;
-import ru.practicum.exception.EventValidationException;
-import ru.practicum.exception.RequestValidationException;
-import ru.practicum.exception.TimeValidationException;
+import ru.practicum.exception.*;
 import ru.practicum.request.db.model.Request;
 import ru.practicum.request.db.model.RequestStatus;
 import ru.practicum.request.service.RequestService;
 import ru.practicum.request.web.dto.ParticipationRequestDto;
 import ru.practicum.request.web.mapper.RequestMapper;
+import ru.practicum.user.db.model.User;
 import ru.practicum.user.service.UserService;
 import ru.practicum.user.web.mapper.UserMapper;
 
@@ -32,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,18 +45,21 @@ public class EventServiceImpl implements EventService {
     private final CategoryService categoryService;
     private final UserService userService;
     private final StatClient statClient;
+    private final CommentRepository commentRepository;
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository, @Lazy RequestService requestService,
                             @Lazy CategoryService categoryService,
-                            @Lazy UserService userService, @Lazy StatClient statClient) {
+                            @Lazy UserService userService, @Lazy StatClient statClient, CommentRepository
+                                    commentRepository) {
         this.eventRepository = eventRepository;
         this.requestService = requestService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.statClient = statClient;
+        this.commentRepository = commentRepository;
     }
 
     @Transactional
@@ -81,6 +86,8 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEvent(int userId, int eventId) {
         EventFullDto eventFullDto = EventMapper.eventToEventFullDto(eventRepository.findByUserIdAndId(userId, eventId));
         eventFullDto.setConfirmedRequests(requestService.findRequestForOneEvent(eventId));
+        eventFullDto.setComments(commentRepository.findByEventId(eventId).stream().map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList()));
         return eventFullDto;
     }
 
@@ -176,14 +183,14 @@ public class EventServiceImpl implements EventService {
 
         if (sort.equals("EVENT_DATE")) {
             return eventRepository.getEventsWithFilterSortEventDate(text, categories, paid,
-                    LocalDateTime.parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter),
-                    PageRequest.of(from, size)).stream().map(EventMapper::eventToEventShortDto)
+                            LocalDateTime.parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter),
+                            PageRequest.of(from, size)).stream().map(EventMapper::eventToEventShortDto)
                     .collect(Collectors.toList());
         }
         if (sort.equals("VIEWS")) {
             return eventRepository.getEventsWithFilterSortViews(text, categories, paid, LocalDateTime
-                    .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter),
-                    PageRequest.of(from, size)).stream().map(EventMapper::eventToEventShortDto)
+                                    .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter),
+                            PageRequest.of(from, size)).stream().map(EventMapper::eventToEventShortDto)
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
@@ -192,20 +199,18 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getEvent(int id) {
         Event event = eventRepository.getEvent(id);
-
         if (event == null || !event.getState().equals("PUBLISHED")) {
             throw new EventNotFoundException("Событие не найдено.");
         }
         Integer views = 0;
         try {
-            views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&uris=/events/"
+            views = statClient.stat("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&uris=/events/"
                     + id + "&unique=true");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
         try {
             statClient.hit("/events/" + id);
         } catch (IOException e) {
@@ -214,6 +219,8 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException(e);
         }
         EventFullDto eventFullDto = EventMapper.eventToEventFullDto(event);
+        eventFullDto.setComments(commentRepository.findByEventId(id).stream().map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList()));
         eventFullDto.setViews(views);
         return eventFullDto;
     }
@@ -221,6 +228,14 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event getEventById(int eventId) {
         Event event = eventRepository.getEvent(eventId);
+        if (event == null) {
+            throw new EventNotFoundException("Событие не найдено.");
+        }
+        return event;
+    }
+
+    public Event getEventByIdAndState(int eventId) {
+        Event event = eventRepository.getEventByIdAndState(eventId);
         if (event == null) {
             throw new EventNotFoundException("Событие не найдено.");
         }
@@ -248,22 +263,35 @@ public class EventServiceImpl implements EventService {
             rangeEnd = LocalDateTime.now().plusYears(5).format(formatter);
         }
         List<Event> eventList = eventRepository.getEvents(users, states, categories, LocalDateTime
-                .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter), PageRequest.of(from, size))
+                        .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter), PageRequest.of(from, size))
                 .stream().collect(Collectors.toList());
         List<EventFullDto> eventFullDtos = new ArrayList<>();
+        Map<Integer, Integer> eventsRequests = requestService
+                .findRequestForEvents(eventList.stream().map(x -> x.getId()).collect(Collectors.toList()));
+
+        StringBuilder urisForQuery = new StringBuilder("");
         for (Event event : eventList) {
-            EventFullDto eventFullDto = EventMapper.eventToEventFullDto(event, requestService
-                    .findRequestForOneEvent(event.getId()));
-            Integer views = 0;
-            try {
-                views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&" +
-                        "uris=/events/" + eventFullDto.getId() + "&unique=true");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            urisForQuery.append("&uris=/events/" + event.getId());
+        }
+        Map<Integer, Integer> views;
+        try {
+            views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00" +
+                    urisForQuery + "&unique=true");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Event event : eventList) {
+            EventFullDto eventFullDto;
+            if (eventsRequests.size() == 0) {
+                eventFullDto = EventMapper.eventToEventFullDto(event, 0);
+            } else {
+                eventFullDto = EventMapper.eventToEventFullDto(event, eventsRequests.get(event.getId()));
             }
-            eventFullDto.setViews(views);
+            eventFullDto.setViews(views.get(event.getId()));
             eventFullDtos.add(eventFullDto);
         }
         return eventFullDtos;
@@ -404,5 +432,36 @@ public class EventServiceImpl implements EventService {
     public List<EventShortDto> getAllEvents(List<Integer> eventsId) {
         return eventRepository.findAllById(eventsId).stream().map(EventMapper::eventToEventShortDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public CommentDto addComment(CommentDto commentDto, int userId, int eventId) {
+        User user = userService.getUser(userId);
+        Event event = getEventByIdAndState(eventId);
+        commentDto.setCreated(LocalDateTime.now());
+        return CommentMapper.toCommentDto(commentRepository
+                .save(CommentMapper.toComment(commentDto, user, event)));
+    }
+
+    @Transactional
+    @Override
+    public void deleteComment(int eventId, int commentId) {
+        commentRepository.deleteByIdAndEventId(commentId, eventId);
+    }
+
+    @Transactional
+    @Override
+    public CommentDto updateComment(CommentDto commentDto, int userId, int eventId, int commentId) {
+        User user = userService.getUser(userId);
+        getEventByIdAndState(eventId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Коментарий для реадктирования не найден."));
+        if (user.getId() != comment.getAuthor().getId()) {
+            throw new CommentException("Нельзя редактировать чужой коментарий.");
+        }
+        comment.setText(commentDto.getText());
+        comment.setIsEdited(true);
+        return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 }
