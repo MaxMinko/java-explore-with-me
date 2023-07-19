@@ -44,24 +44,13 @@ public class StatClient {
         postStaticDto.setUri(uri);
         postStaticDto.setIp(ip.getHostAddress());
         postStaticDto.setTimestamp(LocalDateTime.now().format(formatter));
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(statServerUrl + "/hit"))
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .headers(HttpHeaders.CONTENT_TYPE, "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString("{\"app\":\"" + postStaticDto.getApp() + "\"," +
-                        "\"uri\":\"" + postStaticDto.getUri() + "\"," +
-                        "\"ip\":\" " + postStaticDto.getIp() + "\"," +
-                        "\"timestamp\":\"" + postStaticDto.getTimestamp() + "\"}"))
-                .build();
+        HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(statServerUrl + "/hit")).header(HttpHeaders.ACCEPT, "application/json").headers(HttpHeaders.CONTENT_TYPE, "application/json").POST(HttpRequest.BodyPublishers.ofString("{\"app\":\"" + postStaticDto.getApp() + "\"," + "\"uri\":\"" + postStaticDto.getUri() + "\"," + "\"ip\":\" " + postStaticDto.getIp() + "\"," + "\"timestamp\":\"" + postStaticDto.getTimestamp() + "\"}")).build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
     }
 
     public Integer stat(String queryString) throws IOException, InterruptedException {
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(statServerUrl + "/stats" + queryString))
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .build();
+        HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(statServerUrl + "/stats" + queryString)).header(HttpHeaders.ACCEPT, "application/json").build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         String[] str = response.body().split(":");
         String[] s = str[3].split("}]");
@@ -69,10 +58,7 @@ public class StatClient {
     }
 
     public Map<Integer, Integer> stats(String queryString) throws IOException, InterruptedException {
-        HttpRequest httpRequest = HttpRequest.newBuilder()
-                .uri(URI.create(statServerUrl + "/stats" + queryString))
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .build();
+        HttpRequest httpRequest = HttpRequest.newBuilder().uri(URI.create(statServerUrl + "/stats" + queryString)).header(HttpHeaders.ACCEPT, "application/json").build();
         HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         String[] str1 = response.body().split(",");
