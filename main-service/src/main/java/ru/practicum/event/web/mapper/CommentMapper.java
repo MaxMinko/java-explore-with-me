@@ -11,7 +11,7 @@ public class CommentMapper {
 
 
     public static Comment toComment(CommentDto commentDto, User user, Event event) {
-        return new Comment(commentDto.getId(), commentDto.getText(), event, user, commentDto.getCreated());
+        return new Comment(commentDto.getId(), commentDto.getText(), event, user, commentDto.getCreated(),false);
     }
 
     public static CommentDto toCommentDto(Comment comment) {

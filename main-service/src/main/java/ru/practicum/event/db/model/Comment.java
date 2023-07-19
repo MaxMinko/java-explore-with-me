@@ -26,12 +26,12 @@ public class Comment {
     @JoinColumn(name = "user_id")
     User author;
     LocalDateTime created;
-    Boolean isEdited = false;
+    @Column(name = "is_Edited")
+    Boolean isEdited;
 
     public Comment() {
 
     }
 
-    public Comment(int id, String text, Event event, User user, LocalDateTime created) {
-    }
+
 }
