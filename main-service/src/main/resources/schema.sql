@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS comments
     event_id INTEGER                                 NOT NULL,
     user_id INTEGER                                 NOT NULL,
     created timestamp without time zone,
-    isEdited boolean         NOT NULL,
+    is_Edited boolean         NOT NULL,
     FOREIGN KEY (user_id) references users (id),
     FOREIGN KEY (event_id) references events (id),
     CONSTRAINT pk_comments PRIMARY KEY (id)
