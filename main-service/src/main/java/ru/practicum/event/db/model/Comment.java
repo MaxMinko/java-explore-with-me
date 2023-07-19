@@ -26,7 +26,7 @@ public class Comment {
     @JoinColumn(name = "user_id")
     User author;
     LocalDateTime created;
-    Boolean isEdited=false;
+    Boolean isEdited = false;
 
     public Comment() {
 

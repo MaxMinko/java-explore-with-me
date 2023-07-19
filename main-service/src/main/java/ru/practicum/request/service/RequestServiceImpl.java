@@ -89,18 +89,19 @@ public class RequestServiceImpl implements RequestService {
     public Integer findRequestForOneEvent(int eventId) {
         return requestRepository.findRequestForOneEvent(eventId);
     }
+
     @Override
-    public Map<Integer, Integer> findRequestForEvents(List<Integer>eventsIds){
-    List<Request>requests=  requestRepository.findRequestForEvents(eventsIds);
-    Map<Integer, Integer>requestsStats=new HashMap<>();
-    for(Request request:requests){
-        if(!requestsStats.containsKey(request.getEvent())){
-            requestsStats.put(request.getEvent(),1);
-        }else {
-          requestsStats.put(request.getEvent(),requestsStats.get(request.getEvent())+1);
+    public Map<Integer, Integer> findRequestForEvents(List<Integer> eventsIds) {
+        List<Request> requests = requestRepository.findRequestForEvents(eventsIds);
+        Map<Integer, Integer> requestsStats = new HashMap<>();
+        for (Request request : requests) {
+            if (!requestsStats.containsKey(request.getEvent())) {
+                requestsStats.put(request.getEvent(), 1);
+            } else {
+                requestsStats.put(request.getEvent(), requestsStats.get(request.getEvent()) + 1);
+            }
         }
-    }
-     return requestsStats;
+        return requestsStats;
     }
 
     @Override
