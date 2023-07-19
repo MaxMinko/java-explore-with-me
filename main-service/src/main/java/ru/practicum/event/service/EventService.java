@@ -18,20 +18,23 @@ public interface EventService {
     List<ParticipationRequestDto> getUserEventRequests(int userId, int eventId);
 
 
-    List<EventShortDto> getEventsWithFilter(String text, List<Integer> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, int from, int size);
+    List<EventShortDto> getEventsWithFilter(String text, List<Integer> categories, Boolean paid, String rangeStart,
+                                            String rangeEnd, Boolean onlyAvailable, String sort, int from, int size);
 
     EventFullDto getEvent(int id);
 
 
     Event getEventById(int eventId);
 
-    List<EventFullDto> getEvents(List<Integer> users, List<String> states, List<Integer> categories, String rangeStart, String rangeEnd, int from, int size);
+    List<EventFullDto> getEvents(List<Integer> users, List<String> states, List<Integer> categories, String rangeStart,
+                                 String rangeEnd, int from, int size);
 
     EventFullDto updateEvent(int eventId, UpdateEventAdminRequest updateEventAdminRequest);
 
     List<ParticipationRequestDto> getRequests(int userId, int eventId);
 
-    EventRequestStatusUpdateResult updateRequest(EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest, int userId, int eventId);
+    EventRequestStatusUpdateResult updateRequest(EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest,
+                                                 int userId, int eventId);
 
     List<EventShortDto> getAllEvents(List<Integer> eventsId);
 

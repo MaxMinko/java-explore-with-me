@@ -32,4 +32,8 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
     @Modifying
     @Query(value = "select count (r.id) from  Request r where r.event IN :eventsId and r.status" + " LIKE 'CONFIRMED' group by r.id")
     List<Integer> findConfirmedRequestsForEvents(List<Integer> eventsId);
+    @Query(value = "SELECT r "
+            + "FROM Request r " +
+            " WHERE  r.status LIKE 'CONFIRMED' and r.event IN :eventsIds")
+    List<Request> findRequestForEvents(@Param("eventsIds") List<Integer>eventsIds);
 }

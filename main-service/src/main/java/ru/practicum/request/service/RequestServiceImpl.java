@@ -17,7 +17,9 @@ import ru.practicum.request.web.mapper.RequestMapper;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,6 +88,19 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Integer findRequestForOneEvent(int eventId) {
         return requestRepository.findRequestForOneEvent(eventId);
+    }
+    @Override
+    public Map<Integer, Integer> findRequestForEvents(List<Integer>eventsIds){
+    List<Request>requests=  requestRepository.findRequestForEvents(eventsIds);
+    Map<Integer, Integer>requestsStats=new HashMap<>();
+    for(Request request:requests){
+        if(!requestsStats.containsKey(request.getEvent())){
+            requestsStats.put(request.getEvent(),1);
+        }else {
+          requestsStats.put(request.getEvent(),requestsStats.get(request.getEvent())+1);
+        }
+    }
+     return requestsStats;
     }
 
     @Override

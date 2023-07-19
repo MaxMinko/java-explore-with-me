@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -203,7 +204,7 @@ public class EventServiceImpl implements EventService {
         }
         Integer views = 0;
         try {
-            views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&uris=/events/"
+            views = statClient.stat("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&uris=/events/"
                     + id + "&unique=true");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -265,19 +266,32 @@ public class EventServiceImpl implements EventService {
                         .parse(rangeStart, formatter), LocalDateTime.parse(rangeEnd, formatter), PageRequest.of(from, size))
                 .stream().collect(Collectors.toList());
         List<EventFullDto> eventFullDtos = new ArrayList<>();
+        Map<Integer, Integer> eventsRequests = requestService
+                .findRequestForEvents(eventList.stream().map(x -> x.getId()).collect(Collectors.toList()));
+
+        StringBuilder urisForQuery = new StringBuilder("");
         for (Event event : eventList) {
-            EventFullDto eventFullDto = EventMapper.eventToEventFullDto(event, requestService
-                    .findRequestForOneEvent(event.getId()));
-            Integer views = 0;
-            try {
-                views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00&" +
-                        "uris=/events/" + eventFullDto.getId() + "&unique=true");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            urisForQuery.append("&uris=/events/" + event.getId());
+        }
+        Map<Integer, Integer> views;
+        try {
+            views = statClient.stats("?start=2020-05-05%2000:00:00&end=2055-05-05%2000:00:00" +
+                    urisForQuery + "&unique=true");
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (Event event : eventList) {
+            EventFullDto eventFullDto;
+            if (eventsRequests.size() == 0) {
+                eventFullDto = EventMapper.eventToEventFullDto(event, 0);
+            } else {
+                eventFullDto = EventMapper.eventToEventFullDto(event, eventsRequests.get(event.getId()));
             }
-            eventFullDto.setViews(views);
+            eventFullDto.setViews(views.get(event.getId()));
             eventFullDtos.add(eventFullDto);
         }
         return eventFullDtos;
@@ -447,6 +461,7 @@ public class EventServiceImpl implements EventService {
             throw new CommentException("Нельзя редактировать чужой коментарий.");
         }
         comment.setText(commentDto.getText());
+        comment.setIsEdited(true);
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }
 }
